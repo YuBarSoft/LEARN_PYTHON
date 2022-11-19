@@ -1,9 +1,11 @@
+import sys
+
 path = 'phonebook.csv'
 
 
 def counter_lines():
     count = 0
-    with open(path, 'r', encoding='windows-1251') as f:
+    with open(path, 'r', encoding='utf-8') as f:
         for line in f:
             count += 1
     return str(count)
@@ -17,14 +19,14 @@ def generate_fake_contact():
     import datetime
 
     for _ in range(30):
-        name = random.choice(open('fake_data/names.txt').readlines()).strip()
-        surname = random.choice(open('fake_data/surnames.txt').readlines()).strip()
+        name = random.choice(open('fake_data/names.txt', encoding='utf-8').readlines()).strip()
+        surname = random.choice(open('fake_data/surnames.txt', encoding='utf-8').readlines()).strip()
         birthday = datetime.date(randint(1950, 2000), randint(1, 12), randint(1, 28)).strftime("%d.%m.%Y")
-        work = random.choice(open('fake_data/companies.txt').readlines()).strip()
+        work = random.choice(open('fake_data/companies.txt', encoding='utf-8').readlines()).strip()
         phonenum = '+' + str(random.randint(79000000000, 80000000000))
         u_data = [name, surname, birthday, work, phonenum]
 
-        with open(path, 'a', encoding='windows-1251') as f:
+        with open(path, 'a', encoding='utf-8') as f:
             line = ';'.join(u_data)
             f.write(counter_lines() + ';' + line + '\n')
 
@@ -39,7 +41,7 @@ def add_new_contact():
     phonenum = input('Введите номер телефона. Если номеров несколько - разделяйте их запятыми: ')
     u_data = [name, surname, birthday, work, phonenum]
 
-    with open(path, 'a', encoding='windows-1251') as f:
+    with open(path, 'a', encoding='utf-8') as f:
         line = ';'.join(u_data)
         f.write(counter_lines() + ';' + line + '\n')
         print('*' * 35)
@@ -48,15 +50,23 @@ def add_new_contact():
 
 def view_csv():
     print('*' * 35)
-    print('\tПРОСМОТР ВСЕХ КОНТАКТОВ')
-    with open(path, 'r', encoding='windows-1251') as f:
-        for line in f:
-            print(line, end='')
+    import os
+    if os.path.isfile(path):
+        print('\tПРОСМОТР ВСЕХ КОНТАКТОВ')
+        if int(counter_lines()) < 2:
+            print('В справочнике нет контактов')
+        else:
+            with open(path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    print(line, end='')
+    else:
+        print('В справочнике нет контактов')
+        book_title()
 
 
 def book_title():
     u_data = ['ID', 'ИМЯ', 'ФАМИЛИЯ', 'ДАТА РОЖДЕНИЯ', 'МЕСТО РАБОТЫ', 'НОМЕРА ТЕЛЕФОНОВ']
-    with open(path, 'w', encoding='windows-1251') as f:
+    with open(path, 'w', encoding='utf-8') as f:
         line = ';'.join(u_data)
         f.write(line + '\n')
 
@@ -64,10 +74,12 @@ def book_title():
 def delete_all():
     print('*' * 35)
     print('\tУДАЛЕНИЕ ВСЕХ КОНТАКТОВ')
-    with open(path, 'w', encoding='windows-1251') as f:
+    with open(path, 'w', encoding='utf-8') as f:
         f.write('')
-    print('Все контакты удалены. Желаете добавить новый контакт?')
-    yes_or_no = input('Введите "да" или "нет": ')
-    if yes_or_no == 'да':
-        add_new_contact()
     book_title()
+    print('Все контакты удалены.')
+    yes_or_no = input('Если желаете добавить новый контакт - нажмите Enter. Любая другая клавиша - закрытие программы.')
+    if yes_or_no == '':
+        add_new_contact()
+    else:
+        sys.exit()
