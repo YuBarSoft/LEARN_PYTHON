@@ -132,6 +132,6 @@ def delete_all():
 
 
 def close_program():
+    connection.close()
     lg.logging.info('Программа закрыта. Всего ВАМ ДО! БРО! ГО! )))')
     sys.exit('Программа закрыта. Всего ВАМ ДО! БРО! ГО! )))')
-    connection.close()
