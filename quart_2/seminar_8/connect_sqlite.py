@@ -1,8 +1,8 @@
 import sqlite3 as sl
 import logger as lg
+import sys
 
 path = 'bd.sqlite'
-
 connection = None
 
 
@@ -15,10 +15,11 @@ def db_connect():
         print(f'Произошла ошибка: {e}')
 
 
+db_connect()
+
+
 def create():
     lg.logging.info('создание таблицы в бд')
-
-    db_connect()
 
     create_users_table = """
     CREATE TABLE IF NOT EXISTS USERS (
@@ -32,15 +33,11 @@ def create():
     with connection:
         connection.execute(create_users_table)
 
-    connection.commit()
-
     print(f'{"*" * 50}\n\tТАБЛИЦА В БД СОЗДАНА')
 
 
 def generation_users():
     lg.logging.info('генерация юзеров')
-
-    db_connect()
 
     sql = 'INSERT INTO USERS (name, age, gender) values(?, ?, ?)'
     data = [
@@ -52,16 +49,12 @@ def generation_users():
     with connection:
         connection.executemany(sql, data)
 
-    connection.commit()
-
     print(f'{"*" * 50}\n\tДАННЫЕ ДОБАВЛЕНЫ')
 
 
 def view_users():
     lg.logging.info('просмотр юзеров')
     print(f'{"*" * 50}\n\tПРОСМОТР СОТРУДНИКОВ:')
-
-    db_connect()
 
     with connection:
         data = connection.execute("SELECT * FROM USERS")
@@ -73,8 +66,6 @@ def view_users():
 def add_user():
     lg.logging.info('добавление юзера')
 
-    db_connect()
-
     print(f'{"*" * 50}\n\tДОБАВЛЕНИЕ СОТРУДНИКА')
     name = input('Имя: ')
     age = input('Возраст: ')
@@ -83,15 +74,11 @@ def add_user():
     with connection:
         connection.execute(f"INSERT INTO USERS (NAME, AGE, GENDER) VALUES('{name}', '{age}', '{gender}')")
 
-    connection.commit()
-
     print('Данные добавлены.')
 
 
 def edit_user():
     lg.logging.info('редактирование юзера')
-
-    db_connect()
 
     print(f'{"*" * 50}\n\tРЕДАКТИРОВАНИЕ ИНФОРМАЦИИ О СОТРУДНИКЕ')
     user_id = int(input('Введите ID сотрудника для редактирования: '))
@@ -119,8 +106,6 @@ def edit_user():
         else:
             print('Что-то пошло не так. Повторите ввод!')
 
-    connection.commit()
-
     data = connection.execute(f"SELECT * FROM USERS WHERE ID = {user_id}")
     for row in data:
         print(f'Данные сотрудника с ID = {user_id}:\n{row}')
@@ -132,12 +117,8 @@ def delete_user():
     print(f'{"*" * 50}\n\tУДАЛЕНИЕ СОТРУДНИКА ИЗ БД')
     user_id = int(input('Введите ID сотрудника для удаления: '))
 
-    db_connect()
-
     with connection:
         connection.execute(f"DELETE FROM USERS WHERE ID = {user_id}")
-
-    connection.commit()
 
     print(f'Сотрудник с ID={user_id} удален из базы данных.')
 
@@ -146,9 +127,11 @@ def delete_all():
     lg.logging.info('удаление всех юзеров')
     print(f'{"*" * 50}\n\tОЧИСТКА БД')
 
-    db_connect()
-
     with connection:
         connection.execute("DELETE FROM USERS")
 
-    connection.commit()
+
+def close_program():
+    lg.logging.info('Программа закрыта. Всего ВАМ ДО! БРО! ГО! )))')
+    sys.exit('Программа закрыта. Всего ВАМ ДО! БРО! ГО! )))')
+    connection.close()
