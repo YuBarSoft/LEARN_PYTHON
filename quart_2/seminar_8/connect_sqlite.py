@@ -71,8 +71,11 @@ def add_user():
     age = input('Возраст: ')
     gender = input('Пол: ')
 
+    sql = 'INSERT INTO USERS (name, age, gender) values(?, ?, ?)'
+    data = [name, age, gender]
+
     with connection:
-        connection.execute(f"INSERT INTO USERS (NAME, AGE, GENDER) VALUES('{name}', '{age}', '{gender}')")
+        connection.execute(sql, data)
 
     print('Данные добавлены.')
 
@@ -95,14 +98,23 @@ def edit_user():
             '\t3. Пол\n'
             '\tВведите номер действия и нажмите Enter: '))
         if choice == '1':
-            new_name = str(input('Отредактируйте имя и нажмите Enter: '))
-            connection.execute(f"UPDATE USERS SET NAME = '{new_name}' WHERE ID = '{user_id}'")
+            new_name = input('Отредактируйте имя и нажмите Enter: ')
+            sql = f'UPDATE USERS SET NAME = (?) WHERE ID = "{user_id}"'
+            data = [new_name]
+            with connection:
+                connection.execute(sql, data)
         elif choice == '2':
-            new_age = str(input('Отредактируйте возраст и нажмите Enter: '))
-            connection.execute(f"UPDATE USERS SET AGE = '{new_age}' WHERE ID = '{user_id}'")
+            new_age = input('Отредактируйте возраст и нажмите Enter: ')
+            sql = f'UPDATE USERS SET AGE = (?) WHERE ID = "{user_id}"'
+            data = [new_age]
+            with connection:
+                connection.execute(sql, data)
         elif choice == '3':
-            new_gender = str(input('Отредактируйте пол и нажмите Enter: '))
-            connection.execute(f"UPDATE USERS SET GENDER = '{new_gender}' WHERE ID = '{user_id}'")
+            new_gender = input('Отредактируйте пол и нажмите Enter: ')
+            sql = f'UPDATE USERS SET GENDER = (?) WHERE ID = "{user_id}"'
+            data = [new_gender]
+            with connection:
+                connection.execute(sql, data)
         else:
             print('Что-то пошло не так. Повторите ввод!')
 
